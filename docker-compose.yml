@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    # volumes:
+    #   - ./frontend/src:/app/src # Useful for dev if we map source instead of using the builder image

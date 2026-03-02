@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" /> <!-- indigo-600 -->
+      <stop offset="100%" stop-color="#7c3aed" /> <!-- violet-600 -->
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" /> <!-- sky-400 -->
+      <stop offset="100%" stop-color="#818cf8" /> <!-- indigo-400 -->
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Base background (rounded square) -->
+  <rect width="256" height="256" rx="56" fill="url(#primaryGrad)" />
+
+  <!-- Inner grid to represent "Self Service / Platform" structure -->
+  <path d="M40 80h176M40 128h176M40 176h176M80 40v176M128 40v176M176 40v176" 
+        stroke="rgba(255,255,255,0.1)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Central "Model / Brain" nodes -->
+  <circle cx="80" cy="128" r="14" fill="url(#accentGrad)" />
+  <circle cx="176" cy="128" r="14" fill="url(#accentGrad)" />
+  <circle cx="128" cy="80" r="14" fill="url(#accentGrad)" />
+  <circle cx="128" cy="176" r="14" fill="url(#accentGrad)" />
+  
+  <!-- "Fine-tuning / Connection" neural pathways -->
+  <path d="M90 118l28-28M138 90l28 28M90 138l28 28M138 166l28-28M128 128l0 0" 
+        stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Central processing core -->
+  <circle cx="128" cy="128" r="24" fill="none" stroke="white" stroke-width="8" filter="url(#glow)" />
+  
+  <!-- Sparks / tuning indicators -->
+  <circle cx="128" cy="128" r="8" fill="white" />
+  <path d="M128 92v12M128 152v12M92 128h12M152 128h12" stroke="white" stroke-width="4" stroke-linecap="round" />
+
+</svg>

@@ -14,13 +14,13 @@ export function JobDetails({ selectedJob }) {
             <div className="p-6 border-b border-slate-800 flex justify-between items-start">
                 <div>
                     <div className="flex items-center gap-3 mb-1">
-                        <h2 className="text-xl font-bold text-white">{selectedJob.modelName}</h2>
+                        <h2 className="text-xl font-bold text-white">{selectedJob.name}</h2>
                         <StatusBadge status={selectedJob.status} />
                     </div>
-                    <p className="text-sm text-slate-400">ID: {selectedJob.id} • Base: {selectedJob.baseModel} • Dataset: {selectedJob.dataset}</p>
+                    <p className="text-sm text-slate-400">ID: {selectedJob.id} • Base: {selectedJob.model || selectedJob.baseModel} • Dataset: {selectedJob.dataset}</p>
                 </div>
 
-                {selectedJob.status === 'running' && (
+                {(selectedJob.status === 'running' || selectedJob.status === 'Running') && (
                     <button className="px-3 py-1.5 border border-rose-900/50 bg-rose-900/20 text-rose-400 text-sm rounded-lg hover:bg-rose-900/40 transition-colors flex items-center gap-2">
                         <X className="w-4 h-4" /> Stop
                     </button>

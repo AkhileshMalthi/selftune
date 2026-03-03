@@ -19,10 +19,10 @@ export function JobQueue({ jobs, selectedJob, setSelectedJob }) {
                             className={`p-4 rounded-lg cursor-pointer transition-all border ${selectedJob?.id === job.id ? 'bg-[#1E2638] border-indigo-500/50' : 'bg-transparent border-transparent hover:bg-slate-800/50'}`}
                         >
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-sm font-medium text-white truncate pr-2">{job.modelName}</h3>
+                                <h3 className="text-sm font-medium text-white truncate pr-2">{job.name}</h3>
                                 <StatusBadge status={job.status} small />
                             </div>
-                            <p className="text-xs text-slate-400 mb-3">{job.id} • {job.startedAt}</p>
+                            <p className="text-xs text-slate-400 mb-3">{job.id}</p>
 
                             {(job.status === 'running' || job.status === 'completed') && (
                                 <div className="space-y-1">

@@ -5,10 +5,77 @@ export const initialDatasets = [
     { id: 4, name: 'product_reviews_sentiment.jsonl', status: 'Valid', size: '5.1 MB', date: '2026-02-26', rows: 32000, format: 'JSONL' }
 ];
 
+// Generate a realistic looking loss curve
+const generateLossHistory = (steps, startLoss, endLoss) => {
+    return Array.from({ length: steps }, (_, i) => {
+        const progress = i / (steps - 1);
+        // Exponential decay curve with some random noise
+        const baseLoss = startLoss * Math.exp(-3 * progress) + (endLoss * progress);
+        const noise = (Math.random() - 0.5) * 0.05 * baseLoss;
+        return {
+            step: i * 50,
+            train_loss: Number((baseLoss + noise).toFixed(4)),
+            val_loss: Number((baseLoss * 1.1 + noise).toFixed(4))
+        };
+    });
+};
+
 export const initialJobs = [
-    { id: 'job-9f8a2c', name: 'Support Bot V2', model: 'Mistral-7B-v0.1', dataset: 'customer_support_q_a.jsonl', status: 'Training', progress: 68, epoch: '2/3', loss: 0.142, timeRemaining: '45m' },
-    { id: 'job-4b3e1a', name: 'Code Assistant Base', model: 'Llama-3-8B', dataset: 'code_generation_snippets.jsonl', status: 'Completed', progress: 100, epoch: '3/3', loss: 0.084, timeRemaining: '-' },
-    { id: 'job-7d5f0b', name: 'Medical Entity Extractor', model: 'Phi-3-Mini-4K', dataset: 'medical_terminology.csv', status: 'Failed', progress: 12, epoch: '0/3', loss: null, timeRemaining: '-' }
+    {
+        id: 'job-9f8a2c',
+        name: 'Support Bot V2',
+        modelName: 'Support Bot V2',
+        baseModel: 'Mistral-7B-v0.1',
+        dataset: 'customer_support_q_a.jsonl',
+        status: 'running',
+        progress: 68,
+        epoch: 2,
+        totalEpochs: 3,
+        loss: 0.142,
+        timeRemaining: '45m',
+        lossHistory: generateLossHistory(20, 2.5, 0.142)
+    },
+    {
+        id: 'job-4b3e1a',
+        name: 'Code Assistant Base',
+        modelName: 'Code Assistant Base',
+        baseModel: 'Llama-3-8B',
+        dataset: 'code_generation_snippets.jsonl',
+        status: 'completed',
+        progress: 100,
+        epoch: 3,
+        totalEpochs: 3,
+        loss: 0.084,
+        timeRemaining: '-',
+        lossHistory: generateLossHistory(40, 2.8, 0.084)
+    },
+    {
+        id: 'job-7d5f0b',
+        name: 'Medical Entity Extractor',
+        modelName: 'Medical Entity Extractor',
+        baseModel: 'Phi-3-Mini-4K',
+        dataset: 'medical_terminology.csv',
+        status: 'failed',
+        progress: 12,
+        epoch: 0,
+        totalEpochs: 3,
+        loss: null,
+        timeRemaining: '-',
+        error: 'CUDA Out of Memory exception during gradient accumulation step 45.'
+    },
+    {
+        id: 'job-1x9k4p',
+        name: 'Legal Doc Summarizer',
+        modelName: 'Legal Doc Summarizer',
+        baseModel: 'Llama-3-8B',
+        dataset: 'legal_contracts_v2.jsonl',
+        status: 'queued',
+        progress: 0,
+        epoch: 0,
+        totalEpochs: 5,
+        loss: null,
+        timeRemaining: 'Waiting...'
+    }
 ];
 
 export const initialModels = [

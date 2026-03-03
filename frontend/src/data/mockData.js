@@ -1,8 +1,20 @@
 export const initialDatasets = [
-    { id: 1, name: 'customer_support_q_a.jsonl', status: 'Valid', size: '2.4 MB', date: '2026-03-01', rows: 15420, format: 'JSONL' },
-    { id: 2, name: 'code_generation_snippets.jsonl', status: 'Valid', size: '1.8 MB', date: '2026-02-28', rows: 8400, format: 'JSONL' },
-    { id: 3, name: 'medical_terminology.csv', status: 'Error', size: '14.2 MB', date: '2026-02-27', rows: 0, format: 'CSV' },
-    { id: 4, name: 'product_reviews_sentiment.jsonl', status: 'Valid', size: '5.1 MB', date: '2026-02-26', rows: 32000, format: 'JSONL' }
+    {
+        id: 'ds-1', name: 'customer_support_q_a.jsonl', status: 'valid', size: '2.4 MB', uploadedAt: '2026-03-01', rows: 15420, format: 'JSONL',
+        validation: { format: true, tokens: true, duplicates: 0, toxicity: ['None'] }
+    },
+    {
+        id: 'ds-2', name: 'code_generation_snippets.jsonl', status: 'valid', size: '1.8 MB', uploadedAt: '2026-02-28', rows: 8400, format: 'JSONL',
+        validation: { format: true, tokens: true, duplicates: 0, toxicity: ['None'] }
+    },
+    {
+        id: 'ds-3', name: 'medical_terminology.csv', status: 'error', size: '14.2 MB', uploadedAt: '2026-02-27', rows: 0, format: 'CSV',
+        validation: { format: false, tokens: true, duplicates: 142, toxicity: ['None'] }
+    },
+    {
+        id: 'ds-4', name: 'product_reviews_sentiment.jsonl', status: 'valid', size: '5.1 MB', uploadedAt: '2026-02-26', rows: 32000, format: 'JSONL',
+        validation: { format: true, tokens: true, duplicates: 12, toxicity: ['Low'] }
+    }
 ];
 
 // Generate a realistic looking loss curve

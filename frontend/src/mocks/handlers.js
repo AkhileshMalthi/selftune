@@ -16,13 +16,14 @@ const db = {
     }
 };
 
-// Seed database on first load
-if (!localStorage.getItem('selftune_mock_seeded')) {
+// Seed database on first load (updated to v2 to clear old schema caches)
+if (!localStorage.getItem('selftune_mock_seeded_v2')) {
     db.set('users', []);
     db.set('datasets', initialDatasets);
     db.set('jobs', initialJobs);
     db.set('models', initialModels);
     db.set('seeded', true);
+    localStorage.setItem('selftune_mock_seeded_v2', 'true');
 }
 
 const API_BASE = '/api';
@@ -103,13 +104,14 @@ export const handlers = [
         const datasets = db.get('datasets', []);
 
         const newDataset = {
-            id: datasets.length + 1,
+            id: `ds-${datasets.length + 1}`,
             name: s3Key.split('_').pop(),
-            status: 'Processing',
+            status: 'processing',
             size: 'Unknown (Mock)',
-            date: new Date().toISOString().split('T')[0],
+            uploadedAt: new Date().toISOString().split('T')[0],
             rows: 0,
-            format: 'JSONL'
+            format: 'JSONL',
+            validation: { format: false, tokens: false, duplicates: 0, toxicity: [] }
         };
 
         db.set('datasets', [newDataset, ...datasets]);
@@ -118,7 +120,12 @@ export const handlers = [
         setTimeout(() => {
             const currentData = db.get('datasets', []);
             const updatedData = currentData.map(d =>
-                d.id === newDataset.id ? { ...d, status: 'Valid', rows: 12500 } : d
+                d.id === newDataset.id ? {
+                    ...d,
+                    status: 'valid',
+                    rows: 12500,
+                    validation: { format: true, tokens: true, duplicates: 0, toxicity: ['None'] }
+                } : d
             );
             db.set('datasets', updatedData);
         }, 3000);

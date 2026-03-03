@@ -19,18 +19,18 @@ export default function App() {
 
   useEffect(() => {
     Promise.all([
-      datasetsApi.getDatasets().catch(() => []),
-      jobsApi.getJobs().catch(() => []),
-      modelsApi.getModels().catch(() => []),
+      datasetsApi.getDatasets().catch(() => ({ data: [] })),
+      jobsApi.getJobs().catch(() => ({ data: [] })),
+      modelsApi.getModels().catch(() => ({ data: [] })),
       systemApi.getHealth().catch(() => ({ status: 'Unknown', workersAvailable: 0 })),
       userApi.getProfile().catch(() => null)
     ])
       .then(([ds, jb, md, health, profile]) => {
-        setDatasets(ds || []);
-        setJobs(jb || []);
-        setModels(md || []);
+        setDatasets(Array.isArray(ds) ? ds : (ds?.data || []));
+        setJobs(Array.isArray(jb) ? jb : (jb?.data || []));
+        setModels(Array.isArray(md) ? md : (md?.data || []));
         setClusterHealth(health);
-        setUser(profile);
+        setUser(profile || { name: 'Guest User', email: 'guest@selftune.app', initials: '?' });
         setLoading(false);
       })
       .catch(err => {

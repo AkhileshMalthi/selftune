@@ -23,11 +23,11 @@ export function Sidebar({ activeTab, navigate, user }) {
                     {user ? (
                         <>
                             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-medium">
-                                {user.initials || user.name.charAt(0)}
+                                {user.initials || (user.name ? user.name.charAt(0) : '?')}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-white truncate">{user.name}</p>
-                                <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                                <p className="text-sm font-medium text-white truncate">{user.name || 'Unknown User'}</p>
+                                <p className="text-xs text-slate-500 truncate">{user.email || 'No email provided'}</p>
                             </div>
                         </>
                     ) : (

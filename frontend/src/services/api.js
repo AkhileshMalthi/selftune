@@ -9,6 +9,20 @@ const api = axios.create({
     },
 });
 
+// Automatically inject JWT token into all requests
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('selftune_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
+export const authApi = {
+    login: (credentials) => api.post('/auth/login', credentials).then(res => res.data),
+    register: (userData) => api.post('/auth/register', userData).then(res => res.data),
+};
+
 export const datasetsApi = {
     getDatasets: () => api.get('/datasets').then(res => res.data),
     getPresignedUrl: (filename) => api.post('/datasets/presigned-url', { filename }).then(res => res.data),

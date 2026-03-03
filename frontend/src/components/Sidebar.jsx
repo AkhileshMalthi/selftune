@@ -2,7 +2,7 @@ import React from 'react';
 import { LayoutDashboard, Database, Activity, Box, Play } from 'lucide-react';
 import { NavItem } from './SharedUI';
 
-export function Sidebar({ activeTab, navigate, user }) {
+export function Sidebar({ activeTab, navigate, user, onLogout }) {
     return (
         <aside className="w-64 border-r border-slate-800 bg-[#0F1423] flex flex-col">
             <div className="p-6 flex items-center gap-3">
@@ -29,6 +29,13 @@ export function Sidebar({ activeTab, navigate, user }) {
                                 <p className="text-sm font-medium text-white truncate">{user.name || 'Unknown User'}</p>
                                 <p className="text-xs text-slate-500 truncate">{user.email || 'No email provided'}</p>
                             </div>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); if (onLogout) onLogout(); }}
+                                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded transition-colors ml-1"
+                                title="Log Out"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            </button>
                         </>
                     ) : (
                         <div className="flex-1 min-w-0 flex items-center gap-3">

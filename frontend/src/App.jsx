@@ -6,9 +6,11 @@ import { DatasetsView } from './views/DatasetsView';
 import { FineTuneView } from './views/FineTuneView';
 import { JobsView } from './views/JobsView';
 import { ModelsView } from './views/ModelsView';
+import { AuthView } from './views/AuthView';
 import { datasetsApi, jobsApi, modelsApi, systemApi, userApi } from './services/api';
 
 export default function App() {
+  const [token, setToken] = useState(localStorage.getItem('selftune_token'));
   const [activeTab, setActiveTab] = useState('dashboard');
   const [datasets, setDatasets] = useState([]);
   const [jobs, setJobs] = useState([]);
@@ -17,7 +19,22 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Sync token changes to localStorage
   useEffect(() => {
+    if (token) {
+      localStorage.setItem('selftune_token', token);
+    } else {
+      localStorage.removeItem('selftune_token');
+    }
+  }, [token]);
+
+  useEffect(() => {
+    // If we have no token, we are guaranteed to fail API calls, skip initialization
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     Promise.all([
       datasetsApi.getDatasets().catch(() => ({ data: [] })),
       jobsApi.getJobs().catch(() => ({ data: [] })),
@@ -37,7 +54,7 @@ export default function App() {
         console.error("API initialization error:", err);
         setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   if (loading) {
     return (
@@ -47,15 +64,26 @@ export default function App() {
     );
   }
 
+  // Auth Guard
+  if (!token) {
+    return <AuthView setToken={setToken} />;
+  }
+
   const navigate = (tab) => setActiveTab(tab);
+
+  const handleLogout = () => {
+    setToken(null);
+    setUser(null);
+    setActiveTab('dashboard');
+  };
 
   return (
     <div className="flex h-screen bg-[#0B0F19] text-slate-300 font-sans selection:bg-indigo-500/30">
-      <Sidebar activeTab={activeTab} navigate={navigate} user={user} />
+      <Sidebar activeTab={activeTab} navigate={navigate} user={user} onLogout={handleLogout} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <Header activeTab={activeTab} />
+        <Header activeTab={activeTab} onLogout={handleLogout} />
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-auto p-8">

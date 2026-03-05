@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -45,7 +45,15 @@ export const ENDPOINTS = {
 };
 
 export const authApi = {
-    login: (credentials) => api.post(ENDPOINTS.auth.login, credentials).then(res => res.data),
+    login: ({ email, password }) => {
+        // OAuth2 password flow requires form-urlencoded with `username` field
+        const form = new URLSearchParams();
+        form.append('username', email);
+        form.append('password', password);
+        return api.post(ENDPOINTS.auth.login, form, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        }).then(res => res.data);
+    },
     register: (userData) => api.post(ENDPOINTS.auth.register, userData).then(res => res.data),
 };
 

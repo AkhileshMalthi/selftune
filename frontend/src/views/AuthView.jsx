@@ -30,9 +30,14 @@ export function AuthView({ setToken }) {
                 response = await authApi.register(formData);
             }
 
-            // Assume the backend returns an object with a 'token' string
-            if (response && response.token) {
-                setToken(response.token);
+            // Backend returns { access_token, refresh_token, token_type }
+            if (response && response.access_token) {
+                localStorage.setItem('selftune_refresh_token', response.refresh_token);
+                setToken(response.access_token);
+            } else if (response && response.id) {
+                // Register returns UserRead — auto-login after registration not needed,
+                // prompt user to log in instead
+                throw new Error("Account created! Please log in.");
             } else {
                 throw new Error("Invalid response from server. No token received.");
             }

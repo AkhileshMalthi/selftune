@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Virtual environment — rebuilt in the Docker layer
+.venv/
+
+# uv cache
+.cache/
+
+# Local database files
+*.db
+*.sqlite3
+
+# Tests — not needed in prod image
+tests/
+
+# Dev tooling
+.python-version
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docs
+README.md
+*.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

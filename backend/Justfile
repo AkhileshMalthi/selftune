@@ -1,0 +1,23 @@
+# Use Modern PowerShell 7+ on Windows
+set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+
+# List all available commands (default behavior)
+default:
+    just --list
+
+# Sync dependencies
+install:
+    uv sync
+
+# Run tests
+test *args:
+    uv run pytest tests/ {{args}}
+
+# Run the application with arguments
+run *args:
+    uv run python main.py {{args}}
+
+# Lint and format code
+lint:
+    uv run ruff check .
+    uv run ruff format .

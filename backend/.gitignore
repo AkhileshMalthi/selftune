@@ -1,0 +1,55 @@
+# ── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# ── Virtual environment ───────────────────────────────────────────────────
+.venv/
+venv/
+env/
+
+# ── uv ────────────────────────────────────────────────────────────────────
+# uv.lock is intentionally committed (reproducible installs)
+.cache/
+
+# ── Distribution / packaging ──────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# ── Testing & coverage ────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ── Linting & type checking ───────────────────────────────────────────────
+.ruff_cache/
+.mypy_cache/
+
+# ── Local databases ───────────────────────────────────────────────────────
+*.db
+*.sqlite3
+
+# ── Environment & secrets ─────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Alembic ───────────────────────────────────────────────────────────────
+# Keep migrations/ committed; ignore any local alembic.ini overrides
+alembic.ini.local
+
+# ── IDEs ──────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

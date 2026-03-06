@@ -42,6 +42,32 @@ services:
       minio:
         condition: service_healthy
 
+  ml_worker:
+    build:
+      context: ./ml_worker
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      - WANDB_API_KEY=${WANDB_API_KEY:-}
+      - WANDB_PROJECT=selftune
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped

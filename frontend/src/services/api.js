@@ -27,6 +27,9 @@ export const ENDPOINTS = {
         base: '/datasets',
         presignedUrl: '/datasets/presigned-url',
         register: '/datasets/register',
+        multipartInitiate: '/datasets/multipart/initiate',
+        multipartPresign: '/datasets/multipart/presign',
+        multipartComplete: '/datasets/multipart/complete',
     },
     models: {
         base: '/models',
@@ -63,7 +66,27 @@ export const datasetsApi = {
     uploadToS3: (url, file) => axios.put(url, file, {
         headers: { 'Content-Type': file.type || 'application/octet-stream' }
     }),
-    registerDataset: (s3Key) => api.post(ENDPOINTS.datasets.register, { s3Key }).then(res => res.data)
+    uploadPartToS3: (url, chunk) => axios.put(url, chunk, {
+        headers: { 'Content-Type': 'application/octet-stream' }
+    }),
+    registerDataset: (data) => api.post(ENDPOINTS.datasets.register, {
+        s3_key: data.s3Key,
+        name: data.name,
+        original_filename: data.originalFilename
+    }).then(res => res.data),
+    multipartInitiate: (filename) => api.post(ENDPOINTS.datasets.multipartInitiate, { filename }).then(res => res.data),
+    multipartPresign: (data) => api.post(ENDPOINTS.datasets.multipartPresign, {
+        s3_key: data.s3Key,
+        upload_id: data.uploadId,
+        part_numbers: data.partNumbers
+    }).then(res => res.data),
+    multipartComplete: (data) => api.post(ENDPOINTS.datasets.multipartComplete, {
+        s3_key: data.s3Key,
+        upload_id: data.uploadId,
+        name: data.name,
+        original_filename: data.originalFilename,
+        parts: data.parts
+    }).then(res => res.data),
 };
 
 export const modelsApi = {

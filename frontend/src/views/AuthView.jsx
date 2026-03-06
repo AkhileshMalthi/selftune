@@ -6,6 +6,7 @@ export function AuthView({ setToken }) {
     const [isLogin, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -15,12 +16,14 @@ export function AuthView({ setToken }) {
     const handleChange = (e) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
         setError(null);
+        setSuccess(null);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setSuccess(null);
 
         try {
             let response;
@@ -34,10 +37,12 @@ export function AuthView({ setToken }) {
             if (response && response.access_token) {
                 localStorage.setItem('selftune_refresh_token', response.refresh_token);
                 setToken(response.access_token);
-            } else if (response && response.id) {
+            } else if (response && (response.id || response.email)) {
                 // Register returns UserRead — auto-login after registration not needed,
                 // prompt user to log in instead
-                throw new Error("Account created! Please log in.");
+                setSuccess("Account created! Please log in.");
+                setIsLogin(true);
+                setFormData(prev => ({ ...prev, password: '' })); // clear password
             } else {
                 throw new Error("Invalid response from server. No token received.");
             }
@@ -68,13 +73,13 @@ export function AuthView({ setToken }) {
                 <div className="bg-[#151B2B] border border-slate-800 rounded-2xl p-8 shadow-2xl">
                     <div className="flex bg-[#0B0F19] p-1 rounded-lg mb-8">
                         <button
-                            onClick={() => { setIsLogin(true); setError(null); }}
+                            onClick={() => { setIsLogin(true); setError(null); setSuccess(null); }}
                             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${isLogin ? 'bg-[#151B2B] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
                         >
                             Log In
                         </button>
                         <button
-                            onClick={() => { setIsLogin(false); setError(null); }}
+                            onClick={() => { setIsLogin(false); setError(null); setSuccess(null); }}
                             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${!isLogin ? 'bg-[#151B2B] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
                         >
                             Create Account
@@ -85,6 +90,12 @@ export function AuthView({ setToken }) {
                         {error && (
                             <div className="bg-rose-900/20 border border-rose-900/50 text-rose-400 text-sm px-4 py-3 rounded-lg flex items-start gap-2">
                                 <span>{error}</span>
+                            </div>
+                        )}
+
+                        {success && (
+                            <div className="bg-emerald-900/20 border border-emerald-900/50 text-emerald-400 text-sm px-4 py-3 rounded-lg flex items-start gap-2">
+                                <span>{success}</span>
                             </div>
                         )}
 

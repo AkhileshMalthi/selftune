@@ -6,12 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 import app.models  # noqa: F401 — registers all SQLModel tables
 from app.api.main import api_router
 from app.core.config import settings
+from app.core.storage import ensure_bucket_exists
 from app.db.base import create_db_and_tables
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
+    ensure_bucket_exists()
     yield
 
 

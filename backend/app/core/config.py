@@ -26,7 +26,6 @@ class Settings(BaseSettings):
     S3_MULTIPART_THRESHOLD_MB: int = 100
 
     # Toxicity moderation
-    MODERATION_PROVIDER: str = "detoxify"   # "moderateapi" | "detoxify"
     MODERATION_API_KEY: str = ""
     TOXICITY_THRESHOLD: float = 0.7
 

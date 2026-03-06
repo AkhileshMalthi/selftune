@@ -4,7 +4,7 @@ Stages:
   1. Format validation  — strict OpenAI chat schema
   2. Token statistics   — per-row token counts via tiktoken
   3. Duplicate removal  — exact hash deduplication, cleaned file re-uploaded
-  4. Toxicity scan      — ModerateAPI (cloud) or detoxify (local)
+  4. Toxicity scan      — ModerateAPI (cloud)
 """
 
 from __future__ import annotations
@@ -64,13 +64,11 @@ def _count_tokens(line: str) -> int:
 
 
 def _score_toxicity(texts: list[str]) -> float:
-    """Return the max toxicity score across all texts using the configured provider."""
+    """Return the max toxicity score across all texts using the cloud provider."""
     if not texts:
         return 0.0
 
-    if settings.MODERATION_PROVIDER == "moderateapi":
-        return _score_moderateapi(texts)
-    return _score_detoxify(texts)
+    return _score_moderateapi(texts)
 
 
 def _score_moderateapi(texts: list[str]) -> float:
@@ -95,12 +93,6 @@ def _score_moderateapi(texts: list[str]) -> float:
     return max_score
 
 
-def _score_detoxify(texts: list[str]) -> float:
-    from detoxify import Detoxify  # noqa: PLC0415
-
-    model = Detoxify("original")
-    scores = model.predict(texts)
-    return float(max(scores["toxicity"]))
 
 
 # ---------------------------------------------------------------------------

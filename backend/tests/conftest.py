@@ -5,6 +5,15 @@ Uses an in-memory SQLite database and FastAPI's TestClient so tests
 are fully isolated from the dev database.
 """
 
+import os
+from unittest.mock import patch
+
+# Force all tests to use an in-memory SQLite DB, overriding .env
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+
+# Mock out S3 bucket setup so tests don't hang trying to connect to MinIO on every TestClient start
+patch("app.core.storage.ensure_bucket_exists").start()
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine

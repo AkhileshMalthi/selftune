@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
-from sqlmodel import Session
 from sqlalchemy import text
+from sqlmodel import Session
 
 from app.models.tuned_model import TunedModel
 from tests.test_auth import auth_headers

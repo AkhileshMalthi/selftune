@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from sqlmodel import Session
 from sqlalchemy import text
+from sqlmodel import Session
 
 from app.models.dataset import Dataset
 from app.models.job import FineTuningJob

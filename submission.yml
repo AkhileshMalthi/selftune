@@ -1,0 +1,6 @@
+install:
+  - cd backend && uv sync
+lint:
+  - cd backend && ruff check .
+test:
+  - cd backend && pytest

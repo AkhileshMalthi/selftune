@@ -1,6 +1,2 @@
-"""
-Re-export all SQLModel table classes so that a single
-`import app.models` registers every model with SQLModel metadata.
-"""
-
+from app.models.dataset import Dataset, DatasetValidationReport  # noqa: F401
 from app.models.user import User  # noqa: F401

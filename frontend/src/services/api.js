@@ -40,7 +40,7 @@ export const ENDPOINTS = {
         health: '/health',
     },
     user: {
-        profile: '/user/profile',
+        profile: '/auth/me',
     }
 };
 

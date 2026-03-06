@@ -64,7 +64,7 @@ export const handlers = [
     }),
 
     // --- USER PROFILE ---
-    http.get(`${API_BASE}/user/profile`, ({ request }) => {
+    http.get(`${API_BASE}/auth/me`, ({ request }) => {
         const authHeader = request.headers.get('Authorization');
         if (!authHeader || !authHeader.startsWith('Bearer mock_jwt_token_for_')) {
             return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 });

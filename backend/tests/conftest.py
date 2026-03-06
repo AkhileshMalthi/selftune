@@ -14,14 +14,14 @@ os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 # Mock out S3 bucket setup so tests don't hang trying to connect to MinIO on every TestClient start
 patch("app.core.storage.ensure_bucket_exists").start()
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
-from sqlmodel.pool import StaticPool
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlmodel import Session, SQLModel, create_engine  # noqa: E402
+from sqlmodel.pool import StaticPool  # noqa: E402
 
-import app.models  # noqa: F401 — registers all SQLModel tables with metadata
-from app.db.session import get_session
-from app.main import app as fastapi_app
+import app.models  # noqa: E402, F401
+from app.db.session import get_session  # noqa: E402
+from app.main import app as fastapi_app  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # In-memory DB fixture — shared within a test session, rolled back per test

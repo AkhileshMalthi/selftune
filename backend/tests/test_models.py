@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 from sqlmodel import Session
+from sqlalchemy import text
 
 from app.models.tuned_model import TunedModel
-
 from tests.test_auth import auth_headers
 
 
@@ -17,7 +17,7 @@ def _seed_model(session: Session, user_id: int, job_id: int) -> TunedModel:
 class TestModelsAPI:
     def test_list_models(self, client: TestClient, session: Session):
         headers = auth_headers(client, email="model_user1@example.com")
-        db_user = session.execute("SELECT id FROM users WHERE email='model_user1@example.com'").fetchone()
+        db_user = session.execute(text("SELECT id FROM users WHERE email='model_user1@example.com'")).fetchone()
         
         _seed_model(session, db_user[0], 100)
         _seed_model(session, db_user[0], 101)
@@ -28,7 +28,7 @@ class TestModelsAPI:
 
     def test_get_model_detail(self, client: TestClient, session: Session):
         headers = auth_headers(client, email="model_user2@example.com")
-        db_user = session.execute("SELECT id FROM users WHERE email='model_user2@example.com'").fetchone()
+        db_user = session.execute(text("SELECT id FROM users WHERE email='model_user2@example.com'")).fetchone()
         
         model = _seed_model(session, db_user[0], 200)
         

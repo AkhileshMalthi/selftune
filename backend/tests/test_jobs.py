@@ -2,10 +2,10 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 from sqlmodel import Session
+from sqlalchemy import text
 
 from app.models.dataset import Dataset
 from app.models.job import FineTuningJob
-
 from tests.test_auth import auth_headers
 
 
@@ -35,7 +35,7 @@ class TestJobsAPI:
         # Seed a dataset for this user
         user_id = 1 # Assuming it's the first user created or we can query it
         # Actually safer to let the client endpoint fail if we guess wrong, but for tests:
-        db_user = session.execute("SELECT id FROM users WHERE email='job_user@example.com'").fetchone()
+        db_user = session.execute(text("SELECT id FROM users WHERE email='job_user@example.com'")).fetchone()
         user_id = db_user[0]
         
         dataset = _seed_dataset(session, user_id, status="ready")
@@ -60,7 +60,7 @@ class TestJobsAPI:
             
     def test_launch_job_dataset_unready(self, client: TestClient, session: Session):
         headers = auth_headers(client, email="job_user2@example.com")
-        db_user = session.execute("SELECT id FROM users WHERE email='job_user2@example.com'").fetchone()
+        db_user = session.execute(text("SELECT id FROM users WHERE email='job_user2@example.com'")).fetchone()
         
         dataset = _seed_dataset(session, db_user[0], status="processing")
         
@@ -74,7 +74,7 @@ class TestJobsAPI:
 
     def test_list_jobs(self, client: TestClient, session: Session):
         headers = auth_headers(client, email="job_user3@example.com")
-        db_user = session.execute("SELECT id FROM users WHERE email='job_user3@example.com'").fetchone()
+        db_user = session.execute(text("SELECT id FROM users WHERE email='job_user3@example.com'")).fetchone()
         
         dataset = _seed_dataset(session, db_user[0])
         _seed_job(session, db_user[0], dataset.id)
@@ -86,7 +86,7 @@ class TestJobsAPI:
 
     def test_get_job_detail(self, client: TestClient, session: Session):
         headers = auth_headers(client, email="job_user4@example.com")
-        db_user = session.execute("SELECT id FROM users WHERE email='job_user4@example.com'").fetchone()
+        db_user = session.execute(text("SELECT id FROM users WHERE email='job_user4@example.com'")).fetchone()
         
         dataset = _seed_dataset(session, db_user[0])
         job = _seed_job(session, db_user[0], dataset.id)

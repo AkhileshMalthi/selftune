@@ -40,7 +40,7 @@ export function FineTuneView({ datasets, setJobs, navigate }) {
         }
     };
 
-    const validDatasets = datasets.filter(d => d.status === 'valid');
+    const validDatasets = datasets.filter(d => d.status === 'ready');
 
     return (
         <div className="max-w-3xl mx-auto space-y-8">

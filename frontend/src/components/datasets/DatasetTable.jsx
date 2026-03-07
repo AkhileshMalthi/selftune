@@ -32,26 +32,26 @@ export function DatasetTable({ datasets }) {
                                 </div>
                             </td>
                             <td className="p-4 text-sm text-slate-300">
-                                {ds.size || 'Pending'} <span className="text-slate-500 mx-1">•</span> {(ds.rows ?? 0).toLocaleString()} rows
+                                {ds.validation_report?.total_rows ? `${(ds.validation_report.total_rows).toLocaleString()} rows` : 'Pending'}
                             </td>
                             <td className="p-4">
                                 <div className="flex flex-col gap-2">
-                                    <Badge variant={ds.status === 'valid' ? 'green' : (ds.status === 'processing' ? 'indigo' : 'red')}>
-                                        {ds.status === 'valid' ? 'Passed Checks' : (ds.status === 'processing' ? 'Validating...' : 'Failed Checks')}
+                                    <Badge variant={ds.status === 'ready' ? 'green' : (ds.status === 'processing' ? 'indigo' : 'red')}>
+                                        {ds.status === 'ready' ? 'Passed Checks' : (ds.status === 'processing' ? 'Validating...' : 'Failed Checks')}
                                     </Badge>
-                                    {ds.validation ? (
+                                    {ds.validation_report ? (
                                         <div className="flex gap-2 mt-1">
-                                            <ValidationIcon check={ds.validation.format} title="JSON Format" />
-                                            <ValidationIcon check={ds.validation.tokens} title="Token Limit" />
-                                            <ValidationIcon check={ds.validation.duplicates === 0} title="Duplicates" />
-                                            <ValidationIcon check={!ds.validation.toxicity?.includes('High')} title="Toxicity Scan" />
+                                            <ValidationIcon check={ds.validation_report.is_passed} title="JSON Format" />
+                                            <ValidationIcon check={ds.validation_report.avg_tokens_per_row > 0} title="Token Limit" />
+                                            <ValidationIcon check={ds.validation_report.duplicate_count === 0} title="Duplicates" />
+                                            <ValidationIcon check={ds.validation_report.toxicity_score < 0.7} title="Toxicity Scan" />
                                         </div>
                                     ) : (
                                         <div className="text-[10px] text-slate-500 italic mt-1">Analysis in progress...</div>
                                     )}
                                 </div>
                             </td>
-                            <td className="p-4 text-sm text-right text-slate-400">{ds.uploadedAt || new Date(ds.created_at).toLocaleDateString()}</td>
+                            <td className="p-4 text-sm text-right text-slate-400">{new Date(ds.created_at).toLocaleDateString()}</td>
                         </tr>
                     ))}
                 </tbody>

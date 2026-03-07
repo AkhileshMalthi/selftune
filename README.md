@@ -1,4 +1,4 @@
-# Selftune: MLOps Fine-Tuning Platform
+# Selftune: A Self Service Fine-Tuning Platform
 
 Selftune is a comprehensive, self-service platform designed to abstract the complexity of fine-tuning Large Language Models (LLMs). It provides an end-to-end MLOps pipeline covering data ingestion, automated data validation, asynchronous GPU-accelerated training, and model artifact management.
 

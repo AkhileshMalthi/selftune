@@ -25,7 +25,7 @@ Selftune follows a decoupled, service-oriented architecture:
 - **Message Broker:** RabbitMQ.
 - **Workers:** 
   - Standard celery worker for data validation.
-  - Dedicated GPU `ml_worker` for running resource-intensive `SFTTrainer` loops.
+  - Dedicated GPU `finetune` for running resource-intensive `SFTTrainer` loops.
 
 For deeper insights, please consult the [ARCHITECTURE.md](./ARCHITECTURE.md) blueprint.
 
@@ -35,7 +35,7 @@ The entire infrastructure has been containerized and is designed to run locally 
 
 ### Prerequisites
 - Docker and Docker Compose installed.
-- (Optional but heavily recommended): NVIDIA GPU with the NVIDIA Container Toolkit activated for the `ml_worker` to utilize `cuda`.
+- (Optional but heavily recommended): NVIDIA GPU with the NVIDIA Container Toolkit activated for the `finetune` to utilize `cuda`.
 
 ### 1. Environment Configuration
 

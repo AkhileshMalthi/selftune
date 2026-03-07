@@ -5,7 +5,7 @@ broker_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//"
 result_backend = os.getenv("CELERY_RESULT_BACKEND", "rpc://")
 
 app = Celery(
-    "ml_worker",
+    "finetune",
     broker=broker_url,
     backend=result_backend,
     include=["training_loop"],

@@ -42,9 +42,9 @@ services:
       minio:
         condition: service_healthy
 
-  ml_worker:
+  finetune:
     build:
-      context: ./ml_worker
+      context: ./finetune
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:

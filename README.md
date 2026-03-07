@@ -16,7 +16,7 @@ Selftune is a comprehensive, self-service platform designed to abstract the comp
 
 ## Architecture Overview
 
-![System Architecture](./assets/SYSTEM_ARCHITECTURE.png)
+![System Architecture](./docs/assets/SYSTEM_ARCHITECTURE.png)
 
 Selftune follows a decoupled, service-oriented architecture:
 - **Frontend:** React + Vite + TailwindCSS.

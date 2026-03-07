@@ -27,7 +27,7 @@ Selftune follows a decoupled, service-oriented architecture:
   - Standard celery worker for data validation.
   - Dedicated GPU `finetune` for running resource-intensive `SFTTrainer` loops.
 
-For deeper insights, please consult the [ARCHITECTURE.md](./ARCHITECTURE.md) blueprint.
+For deeper insights, please consult the [ARCHITECTURE.md](./docs/ARCHITECTURE.md) blueprint.
 
 ## Local Development Setup (Docker Compose)
 

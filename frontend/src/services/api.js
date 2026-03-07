@@ -10,6 +10,8 @@ const api = axios.create({
 });
 
 // Automatically inject JWT token into all requests
+const DEMO_MODE = true; // Set to false to use real backend
+
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('selftune_token');
     if (token) {
@@ -17,6 +19,61 @@ api.interceptors.request.use((config) => {
     }
     return config;
 });
+
+// Demo Data
+const MOCK_DATASETS = [
+    {
+        id: "ds_7v2kL90",
+        name: "customer_support_v2",
+        original_filename: "support_history.jsonl",
+        status: "valid",
+        size: "14.2 MB",
+        rows: 12500,
+        uploadedAt: "2026-03-07",
+        validation: {
+            format: true,
+            tokens: true,
+            duplicates: 0,
+            toxicity: ["None"]
+        }
+    },
+    {
+        id: "ds_4x9mP21",
+        name: "physics_equations_base",
+        original_filename: "equations.jsonl",
+        status: "valid",
+        size: "2.1 MB",
+        rows: 850,
+        uploadedAt: "2026-03-06",
+        validation: {
+            format: true,
+            tokens: true,
+            duplicates: 0,
+            toxicity: ["None"]
+        }
+    }
+];
+
+const MOCK_JOBS = [
+    {
+        id: "job_9921",
+        model_name: "Llama-3-8B-Base",
+        dataset_name: "customer_support_v2",
+        status: "completed",
+        progress: 100,
+        metrics: { loss: 0.12, accuracy: 0.94 },
+        created_at: "2026-03-07T10:00:00Z"
+    },
+    {
+        id: "job_9845",
+        model_name: "Mistral-7B-v0.3",
+        dataset_name: "physics_equations_base",
+        status: "running",
+        progress: 68,
+        metrics: { loss: 0.45, accuracy: 0.81 },
+        created_at: "2026-03-07T14:30:00Z"
+    }
+];
 
 export const ENDPOINTS = {
     auth: {
@@ -69,19 +126,44 @@ const fixS3Url = (url) => {
 };
 
 export const datasetsApi = {
-    getDatasets: () => api.get(ENDPOINTS.datasets.base).then(res => res.data),
-    getPresignedUrl: (filename) => api.post(ENDPOINTS.datasets.presignedUrl, { filename }).then(res => res.data),
-    uploadToS3: (url, file) => axios.put(fixS3Url(url), file, {
-        headers: { 'Content-Type': file.type || 'application/octet-stream' }
-    }),
+    getDatasets: () => {
+        if (DEMO_MODE) return Promise.resolve(MOCK_DATASETS);
+        return api.get(ENDPOINTS.datasets.base).then(res => res.data);
+    },
+    getPresignedUrl: (filename) => {
+        if (DEMO_MODE) return Promise.resolve({ upload_url: "http://demo/upload", s3_key: "demo.jsonl" });
+        return api.post(ENDPOINTS.datasets.presignedUrl, { filename }).then(res => res.data);
+    },
+    uploadToS3: (url, file) => {
+        if (DEMO_MODE) return Promise.resolve({ status: 200 });
+        return axios.put(fixS3Url(url), file, {
+            headers: { 'Content-Type': 'application/x-ndjson' }
+        });
+    },
     uploadPartToS3: (url, chunk) => axios.put(fixS3Url(url), chunk, {
-        headers: { 'Content-Type': 'application/octet-stream' }
+        headers: { 'Content-Type': 'application/x-ndjson' }
     }),
-    registerDataset: (data) => api.post(ENDPOINTS.datasets.register, {
-        s3_key: data.s3Key,
-        name: data.name,
-        original_filename: data.originalFilename
-    }).then(res => res.data),
+    registerDataset: (data) => {
+        if (DEMO_MODE) {
+            const newDs = {
+                id: "ds_" + Math.random().toString(36).substr(2, 7),
+                name: data.name,
+                original_filename: data.originalFilename,
+                status: "valid",
+                size: "0.1 MB",
+                rows: 10,
+                uploadedAt: new Date().toISOString().split('T')[0],
+                validation: { format: true, tokens: true, duplicates: 0, toxicity: ["None"] }
+            };
+            MOCK_DATASETS.unshift(newDs);
+            return Promise.resolve(newDs);
+        }
+        return api.post(ENDPOINTS.datasets.register, {
+            s3_key: data.s3Key,
+            name: data.name,
+            original_filename: data.originalFilename
+        }).then(res => res.data);
+    },
     multipartInitiate: (filename) => api.post(ENDPOINTS.datasets.multipartInitiate, { filename }).then(res => res.data),
     multipartPresign: (data) => api.post(ENDPOINTS.datasets.multipartPresign, {
         s3_key: data.s3Key,
@@ -102,9 +184,30 @@ export const modelsApi = {
 };
 
 export const jobsApi = {
-    getJobs: () => api.get(ENDPOINTS.jobs.base).then(res => res.data),
-    createJob: (data) => api.post(ENDPOINTS.jobs.base, data).then(res => res.data),
-    getJobMetrics: (jobId) => api.get(ENDPOINTS.jobs.metrics(jobId)).then(res => res.data),
+    getJobs: () => {
+        if (DEMO_MODE) return Promise.resolve(MOCK_JOBS);
+        return api.get(ENDPOINTS.jobs.base).then(res => res.data);
+    },
+    createJob: (data) => {
+        if (DEMO_MODE) {
+            const newJob = {
+                id: "job_" + Math.floor(Math.random() * 9000 + 1000),
+                model_name: data.model_id,
+                dataset_name: MOCK_DATASETS.find(d => d.id === data.dataset_id)?.name || "Unknown",
+                status: "running",
+                progress: 0,
+                metrics: { loss: 0.0, accuracy: 0.0 },
+                created_at: new Date().toISOString()
+            };
+            MOCK_JOBS.unshift(newJob);
+            return Promise.resolve(newJob);
+        }
+        return api.post(ENDPOINTS.jobs.base, data).then(res => res.data);
+    },
+    getJobMetrics: (jobId) => {
+        if (DEMO_MODE) return Promise.resolve({ loss: [0.9, 0.7, 0.5, 0.3], accuracy: [0.4, 0.6, 0.8, 0.9] });
+        return api.get(ENDPOINTS.jobs.metrics(jobId)).then(res => res.data);
+    },
     stopJob: (jobId) => api.post(ENDPOINTS.jobs.stop(jobId)).then(res => res.data),
 };
 

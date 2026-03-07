@@ -60,13 +60,21 @@ export const authApi = {
     register: (userData) => api.post(ENDPOINTS.auth.register, userData).then(res => res.data),
 };
 
+// Helper to rewrite internal docker minio URL to localhost for the host browser
+const fixS3Url = (url) => {
+    if (url && url.includes('minio:9000')) {
+        return url.replace('minio:9000', 'localhost:9000');
+    }
+    return url;
+};
+
 export const datasetsApi = {
     getDatasets: () => api.get(ENDPOINTS.datasets.base).then(res => res.data),
     getPresignedUrl: (filename) => api.post(ENDPOINTS.datasets.presignedUrl, { filename }).then(res => res.data),
-    uploadToS3: (url, file) => axios.put(url, file, {
+    uploadToS3: (url, file) => axios.put(fixS3Url(url), file, {
         headers: { 'Content-Type': file.type || 'application/octet-stream' }
     }),
-    uploadPartToS3: (url, chunk) => axios.put(url, chunk, {
+    uploadPartToS3: (url, chunk) => axios.put(fixS3Url(url), chunk, {
         headers: { 'Content-Type': 'application/octet-stream' }
     }),
     registerDataset: (data) => api.post(ENDPOINTS.datasets.register, {

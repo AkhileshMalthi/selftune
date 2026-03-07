@@ -3,8 +3,5 @@ services:
     build:
       context: ./mock_finetune
       dockerfile: Dockerfile
-    # Overriding the deploy section with empty resources to remove GPU requirement
-    deploy:
-      resources:
-        reservations:
-          devices: []
+    # Overriding the deploy section completely to remove GPU requirement
+    deploy: !reset null

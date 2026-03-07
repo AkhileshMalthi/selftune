@@ -26,6 +26,21 @@ def _make_client() -> boto3.client:
         config=Config(signature_version="s3v4"),
     )
 
+def _make_presign_client() -> boto3.client:
+    """Return a boto3 S3 client specifically for generating frontend presigned URLs.
+    
+    This patches the internal docker network hostname `minio` to `localhost` so the AWS
+    V4 Signature is computed using the exact Host header that the host browser will use.
+    """
+    endpoint = settings.S3_ENDPOINT_URL.replace("minio:9000", "localhost:9000")
+    return boto3.client(
+        "s3",
+        endpoint_url=endpoint,
+        aws_access_key_id=settings.S3_ACCESS_KEY,
+        aws_secret_access_key=settings.S3_SECRET_KEY,
+        config=Config(signature_version="s3v4"),
+    )
+
 
 # ---------------------------------------------------------------------------
 # Bucket bootstrap
@@ -70,7 +85,7 @@ def make_s3_key(user_id: int, filename: str) -> str:
 
 def generate_presigned_put_url(s3_key: str) -> str:
     """Generate a presigned PUT URL for a single-part upload."""
-    client = _make_client()
+    client = _make_presign_client()
     return client.generate_presigned_url(
         "put_object",
         Params={"Bucket": settings.S3_BUCKET_NAME, "Key": s3_key},
@@ -105,7 +120,7 @@ def initiate_multipart_upload(s3_key: str) -> str:
 
 def generate_presigned_part_url(s3_key: str, upload_id: str, part_number: int) -> str:
     """Generate a presigned PUT URL for a single multipart chunk."""
-    client = _make_client()
+    client = _make_presign_client()
     return client.generate_presigned_url(
         "upload_part",
         Params={

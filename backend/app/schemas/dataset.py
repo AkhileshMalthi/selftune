@@ -72,6 +72,7 @@ class DatasetRead(SQLModel):
     original_filename: Annotated[str, Field(description="Original filename")]
     status: Annotated[str, Field(description="processing | ready | failed")]
     created_at: Annotated[datetime, Field(description="Upload timestamp")]
+    validation_report: Annotated["ValidationReportRead | None", Field(default=None)]
 
 
 class ValidationReportRead(SQLModel):

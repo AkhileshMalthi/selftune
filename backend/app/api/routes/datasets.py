@@ -149,7 +149,14 @@ def multipart_complete(
 def list_datasets(current_user: CurrentUser, session: SessionDep) -> list[DatasetRead]:
     """Return all datasets belonging to the authenticated user."""
     datasets = get_datasets_for_user(session, current_user.id)
-    return [DatasetRead.model_validate(d, from_attributes=True) for d in datasets]
+    result = []
+    for d in datasets:
+        report = get_validation_report(session, d.id)
+        read_obj = DatasetRead.model_validate(d, from_attributes=True)
+        if report:
+            read_obj.validation_report = ValidationReportRead.model_validate(report, from_attributes=True)
+        result.append(read_obj)
+    return result
 
 
 @router.get("/{dataset_id}", response_model=DatasetRead)
@@ -160,7 +167,12 @@ def get_dataset_detail(
     dataset = get_dataset(session, dataset_id, current_user.id)
     if not dataset:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dataset not found.")
-    return DatasetRead.model_validate(dataset, from_attributes=True)
+    
+    report = get_validation_report(session, dataset_id)
+    read_obj = DatasetRead.model_validate(dataset, from_attributes=True)
+    if report:
+        read_obj.validation_report = ValidationReportRead.model_validate(report, from_attributes=True)
+    return read_obj
 
 
 @router.get("/{dataset_id}/report", response_model=ValidationReportRead)

@@ -24,7 +24,7 @@ export function StepDataset({ validDatasets, formData, setFormData }) {
                             />
                             <div>
                                 <p className="font-medium text-white">{ds.name}</p>
-                                <p className="text-xs text-slate-400 mt-1">{ds.rows.toLocaleString()} rows • Passed all validation checks</p>
+                                <p className="text-xs text-slate-400 mt-1">{(ds.validation_report?.total_rows || 0).toLocaleString()} rows • Passed all validation checks</p>
                             </div>
                         </label>
                     ))}

@@ -11,12 +11,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN ln -sf /usr/bin/python3.10 /usr/bin/python
 RUN ln -sf /usr/bin/python3.10 /usr/bin/python3
-RUN python -m pip install --upgrade pip setuptools wheel
+
+# Install uv for blazingly fast dependency resolution
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --system --no-cache -r requirements.txt
 
 COPY . .
 

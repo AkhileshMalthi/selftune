@@ -43,11 +43,17 @@ export default function App() {
       userApi.getProfile().catch(() => null)
     ])
       .then(([ds, jb, md, health, profile]) => {
+        if (!profile) {
+          // 401 Unauthorized: The token is invalid or expired.
+          setToken(null);
+          setLoading(false);
+          return;
+        }
         setDatasets(Array.isArray(ds) ? ds : (ds?.data || []));
         setJobs(Array.isArray(jb) ? jb : (jb?.data || []));
         setModels(Array.isArray(md) ? md : (md?.data || []));
         setClusterHealth(health);
-        setUser(profile || { name: 'Guest User', email: 'guest@selftune.app', initials: '?' });
+        setUser(profile);
         setLoading(false);
       })
       .catch(err => {

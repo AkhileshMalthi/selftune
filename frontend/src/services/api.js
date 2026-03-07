@@ -18,6 +18,25 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+// Handle unauthorized responses globally
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Check if this was a login request (where 401 is an expected user error)
+            const isLoginRequest = error.config.url.includes('/auth/login');
+
+            if (!isLoginRequest) {
+                console.warn("Session expired or invalid. Logging out...");
+                localStorage.removeItem('selftune_token');
+                // Force a reload to clear all app state and trigger Auth Guard
+                window.location.reload();
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export const ENDPOINTS = {
     auth: {
         login: '/auth/login',

@@ -86,3 +86,15 @@ class ValidationReportRead(SQLModel):
     is_passed: bool
     error_message: str | None
     completed_at: datetime | None
+
+
+class ValidationReportWebhookPayload(SQLModel):
+    is_passed: bool
+    error_message: str | None = None
+    total_rows: int = 0
+    valid_rows: int = 0
+    invalid_format_count: int = 0
+    max_tokens_per_row: int = 0
+    avg_tokens_per_row: float = 0.0
+    duplicate_count: int = 0
+    toxicity_score: float = 0.0

@@ -28,15 +28,14 @@ services:
       minio:
         condition: service_healthy
 
-  celery_worker:
-    image: selftune-backend:latest
-    command: celery -A app.worker.celery_app worker --loglevel=info
+  validation:
+    build:
+      context: ./validation
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
       - ./.env
     depends_on:
-      postgres:
-        condition: service_healthy
       rabbitmq:
         condition: service_healthy
       minio:

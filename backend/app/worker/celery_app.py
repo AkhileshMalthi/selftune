@@ -12,7 +12,6 @@ from app.core.config import settings
 celery_app = Celery(
     "selftune",
     broker=settings.CELERY_BROKER_URL,
-    include=["app.worker.tasks"],
 )
 
 celery_app.conf.update(

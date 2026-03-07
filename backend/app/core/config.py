@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     MODERATION_API_KEY: str = ""
     TOXICITY_THRESHOLD: float = 0.7
 
+    # Webhook endpoint security
+    WEBHOOK_SECRET: str = "super-secret"
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 

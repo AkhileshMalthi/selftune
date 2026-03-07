@@ -17,7 +17,6 @@ dependencies = [
     "pyjwt>=2.11.0",
     "python-multipart>=0.0.22",
     "sqlmodel>=0.0.37",
-    "tiktoken>=0.9",
     "uvicorn[standard]>=0.41.0",
 ]
 

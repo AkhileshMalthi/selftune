@@ -35,7 +35,7 @@ def mock_storage():
          patch("app.api.routes.datasets.generate_presigned_put_url", return_value="https://mock/put") as m_put, \
          patch("app.api.routes.datasets.generate_presigned_part_url", return_value="https://mock/part") as m_part, \
          patch("app.api.routes.datasets.complete_multipart_upload", return_value={}) as m_complete, \
-         patch("app.api.routes.datasets.validate_dataset_task.delay") as m_celery:
+         patch("app.api.routes.datasets.celery_app.send_task") as m_celery:
         yield {
             "exists": m_exists,
             "init": m_init,
@@ -84,7 +84,10 @@ class TestSimpleUpload:
         
         # Verify validation task was queued
         dataset_id = data["id"]
-        mock_storage["celery"].assert_called_once_with(dataset_id)
+        mock_storage["celery"].assert_called_once_with(
+            "validate_dataset_task",
+            kwargs={"payload": {"dataset_id": dataset_id, "s3_key": "datasets/1/test.jsonl"}}
+        )
 
     def test_register_fails_if_unauthorized(self, client: TestClient):
         resp = client.post(
@@ -165,7 +168,10 @@ class TestMultipartUpload:
         mock_storage["complete"].assert_called_once_with(
             "key", "id", [{"PartNumber": 1, "ETag": "abc"}, {"PartNumber": 2, "ETag": "def"}]
         )
-        mock_storage["celery"].assert_called_once_with(data["id"])
+        mock_storage["celery"].assert_called_once_with(
+            "validate_dataset_task",
+            kwargs={"payload": {"dataset_id": data["id"], "s3_key": "key"}}
+        )
 
 
 # ---------------------------------------------------------------------------

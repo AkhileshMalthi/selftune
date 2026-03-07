@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException, status
+from datetime import datetime, timezone
+from typing import Annotated
+
+from fastapi import APIRouter, Header, HTTPException, status
 
 from app.api.deps import CurrentUser, SessionDep
 from app.core.storage import (
@@ -26,8 +29,9 @@ from app.schemas.dataset import (
     PresignedUrlResponse,
     RegisterDatasetRequest,
     ValidationReportRead,
+    ValidationReportWebhookPayload,
 )
-from app.worker.tasks import validate_dataset_task
+from app.worker.celery_app import celery_app
 
 router = APIRouter()
 
@@ -74,7 +78,10 @@ def register_dataset(
         s3_key=body.s3_key,
         original_filename=body.original_filename,
     )
-    validate_dataset_task.delay(dataset.id)
+    celery_app.send_task(
+        "validate_dataset_task",
+        kwargs={"payload": {"dataset_id": dataset.id, "s3_key": dataset.s3_key}}
+    )
     return DatasetRead.model_validate(dataset, from_attributes=True)
 
 
@@ -126,7 +133,10 @@ def multipart_complete(
         s3_key=body.s3_key,
         original_filename=body.original_filename,
     )
-    validate_dataset_task.delay(dataset.id)
+    celery_app.send_task(
+        "validate_dataset_task",
+        kwargs={"payload": {"dataset_id": dataset.id, "s3_key": dataset.s3_key}}
+    )
     return DatasetRead.model_validate(dataset, from_attributes=True)
 
 
@@ -178,3 +188,43 @@ def get_dataset_report(
             status_code=status.HTTP_404_NOT_FOUND, detail="Validation report not found."
         )
     return ValidationReportRead.model_validate(report, from_attributes=True)
+
+
+@router.post("/{dataset_id}/validation_report", status_code=status.HTTP_200_OK)
+def receive_validation_report(
+    dataset_id: int,
+    payload: ValidationReportWebhookPayload,
+    session: SessionDep,
+    x_webhook_secret: Annotated[str, Header()] = "",
+):
+    """Webhook endpoint for the isolated validation worker to post reports."""
+    from app.core.config import settings
+    from app.models.dataset import Dataset, DatasetValidationReport
+    
+    if x_webhook_secret != settings.WEBHOOK_SECRET:
+        raise HTTPException(status_code=403, detail="Invalid webhook secret")
+        
+    dataset = session.get(Dataset, dataset_id)
+    if not dataset:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+        
+    report = DatasetValidationReport(
+        dataset_id=dataset_id,
+        is_passed=payload.is_passed,
+        error_message=payload.error_message,
+        total_rows=payload.total_rows,
+        valid_rows=payload.valid_rows,
+        invalid_format_count=payload.invalid_format_count,
+        max_tokens_per_row=payload.max_tokens_per_row,
+        avg_tokens_per_row=payload.avg_tokens_per_row,
+        duplicate_count=payload.duplicate_count,
+        toxicity_score=payload.toxicity_score,
+        completed_at=datetime.now(timezone.utc)
+    )
+    session.add(report)
+    
+    dataset.status = "ready" if payload.is_passed else "failed"
+    session.add(dataset)
+    session.commit()
+    
+    return {"status": "ok"}

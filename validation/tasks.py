@@ -49,7 +49,7 @@ def _score_toxicity(texts: list[str]) -> float:
             pass
     return max_score
 
-@app.task(bind=True, max_retries=3)
+@app.task(bind=True, name="validate_dataset_task", max_retries=3)
 def validate_dataset_task(self, payload: dict):
     dataset_id = payload.get("dataset_id")
     s3_key = payload.get("s3_key")

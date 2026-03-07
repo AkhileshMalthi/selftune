@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import App from './App';
+import App from '../App';
 
 // Mock the API services to avoid real network calls
-vi.mock('./services/api', () => ({
+vi.mock('../services/api', () => ({
     datasetsApi: { getDatasets: vi.fn(() => Promise.resolve([])) },
     jobsApi: { getJobs: vi.fn(() => Promise.resolve([])) },
     modelsApi: { getModels: vi.fn(() => Promise.resolve([])) },
@@ -35,7 +35,7 @@ describe('App Integration (Auth Guard)', () => {
     });
 
     it('redirects to login page if token exists but profile fetch fails (invalid token)', async () => {
-        const { userApi } = await import('./services/api');
+        const { userApi } = await import('../services/api');
         userApi.getProfile.mockReturnValueOnce(Promise.resolve(null));
 
         localStorage.setItem('selftune_token', 'invalid-token');
